@@ -77,6 +77,7 @@ public class Observer : MonoBehaviour
         }
         else if (_state == State.Noticing)
         {
+            Debug.Log("Noticing cancelled: nurse lost sight of player.");
             CancelNoticing();
         }
         else if (_state == State.Chasing)
@@ -124,6 +125,8 @@ public class Observer : MonoBehaviour
     // The nurse begins noticing the player, stopping its patrol and starting the notice timer
     private void BeginNoticing()
     {
+        Debug.Log("Nurse entered Noticing state!");
+
         _state = State.Noticing;
         _noticeTimer = 0f;
         _agent.isStopped = true;
@@ -152,6 +155,8 @@ public class Observer : MonoBehaviour
             noticeIndicator.fillAmount = noticeDuration <= 0f
                 ? 1f
                 : Mathf.Clamp01(_noticeTimer / noticeDuration);
+
+            Debug.Log($"Notice fill: {noticeIndicator.fillAmount:F2}");
         }
     }
 
@@ -246,6 +251,8 @@ public class Observer : MonoBehaviour
     {
         if (noticeIndicator != null)
         {
+            Debug.Log($"Notice indicator: {visible}, Image: {noticeIndicator.name}");
+
             noticeIndicator.enabled = visible;
             if (!visible)
             {
