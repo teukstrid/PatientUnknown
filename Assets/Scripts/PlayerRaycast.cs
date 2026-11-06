@@ -1,29 +1,22 @@
-
 using UnityEngine;
 
 public class PlayerRaycast : MonoBehaviour
 {
     [SerializeField] private Camera playerCamera;
-    [SerializeField, Min(0f)] private float interactDistance = 3f;
-    [SerializeField] private PlayerInteraction playerInteract;
+    [SerializeField] private float interactDistance = 3f;
+    [SerializeField] private PlayerInteractionRange interactionRange;
+    [SerializeField] private PlayerInteract playerInteract;
 
-    private ItemHighlight _currentItemHighlight;
+    private InteractableComponent currentInteractable;
+    private ItemHighlight currentItemHighlight;
 
-    private void Awake()
+    void Update()
     {
-        if (playerCamera == null || playerInteract == null)
-        {
-            Debug.LogError("Assign the camera and PlayerInteraction references.", this);
-            enabled = false;
-        }
-    }
-
-    private void Update()
-    {
+        Debug.LogError("RAYCAST RUNNING");
         CheckForInteractable();
     }
 
-    private void CheckForInteractable()
+    void CheckForInteractable()
     {
         InteractableComponent detectedInteractable = null;
         ItemHighlight detectedHighlight = null;
@@ -32,49 +25,36 @@ public class PlayerRaycast : MonoBehaviour
             playerCamera.transform.position,
             playerCamera.transform.forward,
             out RaycastHit hit,
-            interactDistance,
-            Physics.DefaultRaycastLayers,
-            QueryTriggerInteraction.Ignore))
+            interactDistance))
         {
-            InteractableComponent hitInteractable =
+            detectedInteractable =
                 hit.collider.GetComponentInParent<InteractableComponent>();
 
-            if (hitInteractable != null)
+            detectedHighlight =
+                hit.collider.GetComponentInParent<ItemHighlight>();
+
+            // Reject objects outside interaction range.
+            if (detectedInteractable != null &&
+                !interactionRange.nearbyInteractables.Contains(detectedInteractable))
             {
-                detectedInteractable = hitInteractable;
-                detectedHighlight = hit.collider.GetComponentInParent<ItemHighlight>();
+                detectedInteractable = null;
+                detectedHighlight = null;
             }
         }
 
-        if (detectedHighlight != _currentItemHighlight)
+        // Update highlighting.
+        if (detectedHighlight != currentItemHighlight)
         {
-            if (_currentItemHighlight != null)
-            {
-                _currentItemHighlight.SetHighlighted(false);
-            }
+            if (currentItemHighlight != null)
+                currentItemHighlight.SetHighlighted(false);
 
-            _currentItemHighlight = detectedHighlight;
+            currentItemHighlight = detectedHighlight;
 
-            if (_currentItemHighlight != null)
-            {
-                _currentItemHighlight.SetHighlighted(true);
-            }
+            if (currentItemHighlight != null)
+                currentItemHighlight.SetHighlighted(true);
         }
 
-        playerInteract.SetCurrentInteractable(detectedInteractable);
-    }
-
-    private void OnDisable()
-    {
-        if (_currentItemHighlight != null)
-        {
-            _currentItemHighlight.SetHighlighted(false);
-            _currentItemHighlight = null;
-        }
-
-        if (playerInteract != null)
-        {
-            playerInteract.SetCurrentInteractable(null);
-        }
+        currentInteractable = detectedInteractable;
+        playerInteract.SetCurrentInteractable(currentInteractable);
     }
 }

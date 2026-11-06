@@ -1,54 +1,33 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerInteractionRange : MonoBehaviour
 {
-    private readonly Dictionary<InteractableComponent, HashSet<Collider>> _collidersByInteractable =
-        new Dictionary<InteractableComponent, HashSet<Collider>>();
-    private readonly Dictionary<Collider, InteractableComponent> _interactableByCollider =
-        new Dictionary<Collider, InteractableComponent>();
+    public List<InteractableComponent> nearbyInteractables =
+    new List<InteractableComponent>();
 
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
-        InteractableComponent interactable = other.GetComponentInParent<InteractableComponent>();
-        if (interactable == null || _interactableByCollider.ContainsKey(other))
+        InteractableComponent component =
+        other.GetComponentInParent<InteractableComponent>();
+
+        if (component != null &&
+            !nearbyInteractables.Contains(component))
         {
-            return;
-        }
-
-        if (!_collidersByInteractable.TryGetValue(interactable, out HashSet<Collider> colliders))
-        {
-            colliders = new HashSet<Collider>();
-            _collidersByInteractable.Add(interactable, colliders);
-        }
-
-        colliders.Add(other);
-        _interactableByCollider.Add(other, interactable);
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (_interactableByCollider.TryGetValue(other, out InteractableComponent interactable))
-        {
-            _interactableByCollider.Remove(other);
-            HashSet<Collider> colliders = _collidersByInteractable[interactable];
-            colliders.Remove(other);
-
-            if (colliders.Count == 0)
-            {
-                _collidersByInteractable.Remove(interactable);
-            }
+            nearbyInteractables.Add(component);
+            Debug.Log("Interactable entered range: " + component.name);
         }
     }
 
-    public bool IsInRange(InteractableComponent interactable)
+    void OnTriggerExit(Collider other)
     {
-        return interactable != null && _collidersByInteractable.ContainsKey(interactable);
-    }
+        InteractableComponent component =
+        other.GetComponentInParent<InteractableComponent>();
 
-    private void OnDisable()
-    {
-        _collidersByInteractable.Clear();
-        _interactableByCollider.Clear();
+        if (component != null)
+        {
+            nearbyInteractables.Remove(component);
+            Debug.Log("Interactable left range: " + component.name);
+        }
     }
 }

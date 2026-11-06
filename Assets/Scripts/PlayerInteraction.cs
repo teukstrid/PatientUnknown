@@ -1,46 +1,44 @@
 using UnityEngine;
 using TMPro;
 
-public class PlayerInteraction : MonoBehaviour
+public class PlayerInteract : MonoBehaviour
 {
-    private InteractableComponent _currentInteractable;
+    private InteractableComponent myComponent;
 
+    // Create a reference to a text object that display the interaction prompt
+    // [SerielizeFiel] lets you assign the text object in the inspector despite being private
     [SerializeField] private TMP_Text interactionPrompt;
 
-    private void Start()
+    void Start()
     {
-        if (interactionPrompt == null)
-        {
-            Debug.LogError("Assign the interaction prompt text to PlayerInteraction.", this);
-            return;
-        }
-
+        // At the start of the game, the interaction prompt is hidden
         interactionPrompt.gameObject.SetActive(false);
     }
 
-    private void Update()
+    void Update()
     {
-        if (_currentInteractable != null &&
-            UnityEngine.InputSystem.Keyboard.current != null &&
-            UnityEngine.InputSystem.Keyboard.current.eKey.wasPressedThisFrame)
+        // Check if the player has an interactable object available and if the player press E
+        if (myComponent != null &&
+        UnityEngine.InputSystem.Keyboard.current != null &&
+        UnityEngine.InputSystem.Keyboard.current.eKey.wasPressedThisFrame)
         {
-            _currentInteractable.Interact();
+            myComponent.Interact();
         }
     }
 
     public void SetCurrentInteractable(InteractableComponent component)
     {
-        if (_currentInteractable == component)
+        myComponent = component;
+
+        if (interactionPrompt == null)
         {
+            Debug.LogError("Interaction prompt is not assigned!");
             return;
         }
 
-        _currentInteractable = component;
+        interactionPrompt.text = "Press E to interact";
+        interactionPrompt.gameObject.SetActive(component != null);
 
-        if (interactionPrompt != null)
-        {
-            interactionPrompt.text = "Press E to interact";
-            interactionPrompt.gameObject.SetActive(_currentInteractable != null);
-        }
+        Debug.Log("Prompt visibility: " + (component != null));
     }
 }
