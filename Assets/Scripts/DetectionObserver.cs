@@ -22,6 +22,8 @@ public class Observer : MonoBehaviour
 
     private NavMeshAgent _agent; // Reference to the navmeshagent attached to the nurse
     private NursePatrolCoroutines _patrol; // Reference to the NursePatrolCoroutines script attached to the nurse
+    private Animator _animator; // Reference to the animator attached to the nurse
+    
     private State _state = State.Patrol; // Current state of the nurse
     private float _noticeTimer; // Timer to track how long the nurse has been noticing the player
     private float _searchTimer; // Timer to track how long the nurse has been waiting at the last known position of the player
@@ -32,6 +34,12 @@ public class Observer : MonoBehaviour
     {
         _agent = GetComponentInParent<NavMeshAgent>(); // Get the navmeshagent component on this object or a parent
         _patrol = GetComponentInParent<NursePatrolCoroutines>(); // Get the NursePatrolCoroutines script on this object or a parent
+        _animator = GetComponentInChildren<Animator>();
+
+        if (_animator == null)
+        {
+            Debug.LogError("Observer could not find the nurse's Animator.", this);
+        }
 
         if (_agent == null)
         {
@@ -173,8 +181,13 @@ public class Observer : MonoBehaviour
     private void BeginChasing()
     {
         _state = State.Chasing;
+        Debug.Log("AI STATE: CHASING", this);
         _waitingAtLastKnownPosition = false;
+
         SetNoticeIndicator(false);
+
+        SetAnimations(false, true, false);
+
         _agent.isStopped = false;
         UpdateChasing();
     }
@@ -202,7 +215,9 @@ public class Observer : MonoBehaviour
     private void BeginInvestigating()
     {
         _state = State.Investigating;
+        Debug.Log("AI STATE: INVESTIGATING", this);
         _waitingAtLastKnownPosition = false;
+        SetAnimations(false, true, false);
         _agent.isStopped = false;
 
         if (!_agent.SetDestination(_lastKnownPlayerPosition))
@@ -222,7 +237,7 @@ public class Observer : MonoBehaviour
                 return;
             }
 
-            if (_agent.hasPath && _agent.remainingDistance > _agent.stoppingDistance)
+            if (_agent.remainingDistance > _agent.stoppingDistance)
             {
                 return;
             }
@@ -231,9 +246,14 @@ public class Observer : MonoBehaviour
         }
 
         _searchTimer -= Time.deltaTime;
+
         if (_searchTimer <= 0f)
         {
+            Debug.Log("AI STATE: RETURNING TO PATROL", this);
             _state = State.Patrol;
+
+            SetAnimations(false, false, false);
+
             _patrol?.ResumePatrol();
         }
     }
@@ -244,6 +264,8 @@ public class Observer : MonoBehaviour
         _waitingAtLastKnownPosition = true;
         _searchTimer = lostPlayerWaitTime;
         _agent.isStopped = true;
+
+        SetAnimations(false, false, true);
     }
 
     // Set the visibility of the notice indicator
@@ -259,5 +281,13 @@ public class Observer : MonoBehaviour
                 noticeIndicator.fillAmount = 0f;
             }
         }
+    }
+    private void SetAnimations(bool walking, bool chasing, bool searching)
+    {
+        if (_animator == null) return;
+
+        _animator.SetBool("isWalking", walking);
+        _animator.SetBool("isChasing", chasing);
+        _animator.SetBool("isSearching", searching);
     }
 }

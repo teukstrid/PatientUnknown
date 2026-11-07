@@ -1,62 +1,86 @@
+
 using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
 
 public class NursePatrolCoroutines : MonoBehaviour
 {
-    [SerializeField] private Transform[] _waypoints; // Exposed array of waypoints
-    private int _currentWaypointIndex = 0; // The index of the current waypoint
-    [SerializeField] private float _waitTime = 1f; // How long the nurse should wait before moving, can be adjusted in the inspector
-    private NavMeshAgent _agent; // Reference the navmeshagent attached to the nurse
-    private Coroutine _patrolCoroutine; // Reference to the running patrol coroutine
-    [SerializeField] private bool _returnToFirstWaypoint = true; // Will the nurse patrol back to their starting position or not
+    [SerializeField] private Transform[] _waypoints;
+    private int _currentWaypointIndex = 0;
+
+    [SerializeField] private float _waitTime = 1f;
+
+    private NavMeshAgent _agent;
+    private Animator _animator;
+    private Coroutine _patrolCoroutine;
+
+    [SerializeField] private bool _returnToFirstWaypoint = true;
     private int _direction = 1;
-    [SerializeField] private float _moveSpeed = 2f; // Speed of the nurse
-    
+
+    [SerializeField] private float _moveSpeed = 2f;
 
     private void Awake()
     {
-        // Get the navmeshagent component on the same gameobject as this script and set the speed of the nurse
+        // The NavMeshAgent and patrol script are on the parent.
         _agent = GetComponent<NavMeshAgent>();
 
-            if (_agent != null)
+        // The Animator is on the child character model.
+        _animator = GetComponentInChildren<Animator>();
+        Debug.Log(
+        $"Observer Animator: {_animator.name}, " +
+        $"Object: {_animator.gameObject.name}", this
+);
+
+        if (_agent != null)
         {
             _agent.speed = _moveSpeed;
+        }
+
+        if (_animator == null)
+        {
+            Debug.LogWarning(
+                "No Animator found on the nurse or its children.", this);
         }
     }
 
     private void Start()
     {
-        // Check that the NavMeshAgent and waypoints are assigned
-        if (_agent == null || _waypoints == null || _waypoints.Length == 0)
+        if (_agent == null ||
+            _waypoints == null ||
+            _waypoints.Length == 0)
         {
-            Debug.LogError("NursePatrol needs a NavMeshAgent and at least one waypoint.", this);
+            Debug.LogError(
+                "NursePatrol needs a NavMeshAgent and at least one waypoint.",
+                this);
+
             enabled = false;
             return;
         }
 
-        // Check that the nurse is standing on the baked NavMesh
         if (!_agent.isOnNavMesh)
         {
-            Debug.LogError("Nurse must start on a baked NavMesh.", this);
+            Debug.LogError(
+                "Nurse must start on a baked NavMesh.", this);
+
             enabled = false;
             return;
         }
 
-        // Begin patrolling from the first waypoint in the array
         _currentWaypointIndex = 0;
         _patrolCoroutine = StartCoroutine(Patrol());
     }
 
     private IEnumerator Patrol()
     {
-        // Repeat the patrol indefinetely while this coroutine is running
         while (true)
         {
-            Transform waypoint = _waypoints[_currentWaypointIndex]; // get the transform at the current index in the waypoint array
+            Transform waypoint = _waypoints[_currentWaypointIndex];
 
-            _agent.isStopped = false; // Allow the nurse to move
-            _agent.SetDestination(waypoint.position); // tell it to move to this waypoint
+            // Begin walking.
+            _agent.isStopped = false;
+            _agent.SetDestination(waypoint.position);
+            SetWalking(true);
+
             Debug.Log($"Nurse moving to waypoint: {waypoint.name}");
 
             while (_agent.pathPending ||
@@ -65,14 +89,16 @@ public class NursePatrolCoroutines : MonoBehaviour
                 yield return null;
             }
 
-            // Stop and wait at this patrol point.
+            // Stop walking and wait at the waypoint.
             _agent.isStopped = true;
+            SetWalking(false);
+
             yield return new WaitForSeconds(_waitTime);
 
-            // If returnToFirstWaypoint is true, the Nurse will move between the waypoints 0 -> 1 -> 2 -> 2 -> 0 etc
+            // Preserve the existing waypoint behaviour.
             if (_returnToFirstWaypoint)
             {
-                                _currentWaypointIndex += _direction;
+                _currentWaypointIndex += _direction;
 
                 if (_currentWaypointIndex >= _waypoints.Length - 1)
                 {
@@ -82,10 +108,7 @@ public class NursePatrolCoroutines : MonoBehaviour
                 {
                     _direction = 1;
                 }
-                
-
             }
-            // If returnToFirstWaypoint is false, the Nurse will never return to the first waypoint, 0 -> 1 -> 2 -> 1 -> 2 etc
             else
             {
                 if (_currentWaypointIndex == _waypoints.Length - 1)
@@ -99,8 +122,15 @@ public class NursePatrolCoroutines : MonoBehaviour
                 }
 
                 _currentWaypointIndex += _direction;
-
             }
+        }
+    }
+
+    private void SetWalking(bool walking)
+    {
+        if (_animator != null)
+        {
+            _animator.SetBool("isWalking", walking);
         }
     }
 
@@ -116,11 +146,16 @@ public class NursePatrolCoroutines : MonoBehaviour
         {
             _agent.isStopped = true;
         }
+
+        SetWalking(false);
     }
 
     public void ResumePatrol()
     {
-        if (_patrolCoroutine == null && isActiveAndEnabled && _agent != null && _agent.isOnNavMesh)
+        if (_patrolCoroutine == null &&
+            isActiveAndEnabled &&
+            _agent != null &&
+            _agent.isOnNavMesh)
         {
             _patrolCoroutine = StartCoroutine(Patrol());
         }
@@ -128,11 +163,12 @@ public class NursePatrolCoroutines : MonoBehaviour
 
     private void OnDisable()
     {
-        // Check if we have a reference to a running coroutine. Stop the coroutine and clear reference.
         if (_patrolCoroutine != null)
         {
             StopCoroutine(_patrolCoroutine);
             _patrolCoroutine = null;
         }
+
+        SetWalking(false);
     }
 }
