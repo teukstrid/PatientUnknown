@@ -26,10 +26,6 @@ public class NursePatrolCoroutines : MonoBehaviour
 
         // The Animator is on the child character model.
         _animator = GetComponentInChildren<Animator>();
-        Debug.Log(
-        $"Observer Animator: {_animator.name}, " +
-        $"Object: {_animator.gameObject.name}", this
-);
 
         if (_agent != null)
         {

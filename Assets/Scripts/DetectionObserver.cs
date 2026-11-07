@@ -29,6 +29,7 @@ public class Observer : MonoBehaviour
     private float _searchTimer; // Timer to track how long the nurse has been waiting at the last known position of the player
     private bool _waitingAtLastKnownPosition; // Flag to indicate if the nurse is waiting at the last known position of the player
     private Vector3 _lastKnownPlayerPosition; // The last known position of the player that the nurse is investigating
+    private bool _isCatching;
     
     private void Awake()
     {
@@ -195,15 +196,15 @@ public class Observer : MonoBehaviour
     // Update the chasing state, checking if the nurse is close enough to catch the player and updating its destination to the player's last known position
     private void UpdateChasing()
     {
+        if (_isCatching)
+            return;
+
         Vector3 distanceToPlayer = player.position - _agent.transform.position;
         distanceToPlayer.y = 0f;
+
         if (distanceToPlayer.sqrMagnitude <= catchDistance * catchDistance)
         {
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.PlayerCaught();
-            }
-
+            StartCoroutine(CatchPlayer());
             return;
         }
 
@@ -280,6 +281,48 @@ public class Observer : MonoBehaviour
             {
                 noticeIndicator.fillAmount = 0f;
             }
+        }
+    }
+
+    private System.Collections.IEnumerator CatchPlayer()
+    {
+        _isCatching = true;
+        _state = State.Chasing;
+
+        // Stop the nurse from moving.
+        _agent.isStopped = true;
+        _agent.ResetPath();
+
+        // Stop the patrol coroutine.
+        _patrol?.PausePatrol();
+
+        // Tell the GameManager the player has been caught.
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.PlayerCaught();
+        }
+
+        // Play the Catch animation.
+        if (_animator != null)
+        {
+            _animator.SetBool("isWalking", false);
+            _animator.SetBool("isChasing", false);
+            _animator.SetBool("isSearching", false);
+            _animator.ResetTrigger("Catch");
+            Debug.Log(
+            $"Triggering Catch on Animator: {_animator.gameObject.name}",
+            _animator
+         );
+            _animator.SetTrigger("Catch");
+        }
+
+        // Temporary wait: replace with the actual clip duration if needed.
+        yield return new WaitForSeconds(2f);
+
+        // Fade to black and reload the scene.
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ResetAfterCaught();
         }
     }
     private void SetAnimations(bool walking, bool chasing, bool searching)

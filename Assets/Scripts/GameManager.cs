@@ -14,6 +14,10 @@ public class GameManager : MonoBehaviour
 
     public GameState CurrentState => _state;
 
+    [SerializeField] private CanvasGroup fadeOverlay;
+    [SerializeField, Min(0f)] private float fadeDuration = 1f;
+    [SerializeField] private MonoBehaviour playerMovement;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -85,12 +89,10 @@ public class GameManager : MonoBehaviour
     public void PlayerCaught()
     {
         if (_state != GameState.Playing)
-        {
             return;
-        }
 
+        playerMovement.enabled = false;
         SetState(GameState.Caught);
-        ResetAfterCaught();
     }
 
     public void PlayerWon()
@@ -108,9 +110,48 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    private void ResetAfterCaught()
+    public void ResetAfterCaught()
     {
+        StartCoroutine(FadeAndReset());
+    }
+
+    private System.Collections.IEnumerator FadeAndReset()
+    {
+        // Make sure the game is running during the fade.
+        Time.timeScale = 1f;
+
+        if (fadeOverlay != null)
+        {
+            fadeOverlay.gameObject.SetActive(true);
+            fadeOverlay.blocksRaycasts = true;
+            fadeOverlay.interactable = true;
+
+            float elapsed = 0f;
+            float startAlpha = fadeOverlay.alpha;
+
+            while (elapsed < fadeDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+
+                fadeOverlay.alpha = Mathf.Lerp(
+                    startAlpha,
+                    1f,
+                    Mathf.Clamp01(elapsed / fadeDuration)
+                );
+
+                yield return null;
+            }
+
+            fadeOverlay.alpha = 1f;
+        }
+
         PlayAgain();
+    }
+
+    public void QuitGame()
+    {
+        Debug.Log("Quitting the game.");
+        Application.Quit();
     }
 
     private void OnDestroy()
