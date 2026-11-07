@@ -5467,7 +5467,7 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: b18c6b126a217704ab7e396d6c143879, type: 2}
     - target: {fileID: 220808189850117147, guid: 0a84120c92f67714295cc4efb757492d, type: 3}
       propertyPath: m_ApplyRootMotion
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6192549768460156513, guid: 0a84120c92f67714295cc4efb757492d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -21997,6 +21997,8 @@ MonoBehaviour:
   viewDistance: 8
   viewAngle: 110
   catchDistance: 1.5
+  syringeInteractionDistance: 2
+  behindAngle: 120
 --- !u!4 &1938424199 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9038502793798095276, guid: ebe35de4f7a28b0459d52bc7ad447a65, type: 3}

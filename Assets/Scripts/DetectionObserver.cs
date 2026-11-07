@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class Observer : MonoBehaviour
 {
@@ -20,6 +21,12 @@ public class Observer : MonoBehaviour
     [SerializeField, Range(0f, 360f)] private float viewAngle = 110f; // At what angle the nurse can see the player
     [SerializeField, Min(0f)] private float catchDistance = 1.2f; // How close the nurse needs to be to the player to catch them
 
+    [Header("Syringe Interaction")]
+    [SerializeField, Min(0f)] private float syringeInteractionDistance = 2f;
+    [SerializeField, Range(90f, 180f)] private float behindAngle = 120f;
+
+    private PlayerInventory _playerInventory;
+    private bool _isDisabled;
     private NavMeshAgent _agent; // Reference to the navmeshagent attached to the nurse
     private NursePatrolCoroutines _patrol; // Reference to the NursePatrolCoroutines script attached to the nurse
     private Animator _animator; // Reference to the animator attached to the nurse
@@ -36,6 +43,14 @@ public class Observer : MonoBehaviour
         _agent = GetComponentInParent<NavMeshAgent>(); // Get the navmeshagent component on this object or a parent
         _patrol = GetComponentInParent<NursePatrolCoroutines>(); // Get the NursePatrolCoroutines script on this object or a parent
         _animator = GetComponentInChildren<Animator>();
+
+        if (player != null)
+        {
+            _playerInventory = player.GetComponentInParent<PlayerInventory>();
+
+            if (_playerInventory == null)
+                _playerInventory = player.GetComponentInChildren<PlayerInventory>();
+        }
 
         if (_animator == null)
         {
@@ -68,6 +83,9 @@ public class Observer : MonoBehaviour
 
     private void Update()
     {
+        if (_isDisabled || _isCatching)
+        return;
+
         bool canSeePlayer = CanSeePlayer(); // Check if the nurse can see the player
 
         // If the nurse can see the player, update the last known position and change the state accordingly. If the nurse cannot see the player, handle the current state and update timers if needed.
@@ -106,6 +124,11 @@ public class Observer : MonoBehaviour
             case State.Investigating:
                 UpdateInvestigation();
                 break;
+        }
+        
+        if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+        {
+            TryDisableWithSyringe();
         }
     }
 
@@ -284,6 +307,105 @@ public class Observer : MonoBehaviour
         }
     }
 
+    private void TryDisableWithSyringe()
+    {
+        // The nurse must be patrolling or investigating/searching.
+        if (_state != State.Patrol &&
+            _state != State.Investigating)
+            return;
+
+        if (_isDisabled || _isCatching)
+            return;
+
+        if (player == null || _playerInventory == null)
+            return;
+
+        // The player must have a syringe.
+        if (!_playerInventory.HasSyringe)
+            return;
+
+        Vector3 toPlayer = player.position - _agent.transform.position;
+        toPlayer.y = 0f;
+
+        // The player must be close enough.
+        if (toPlayer.magnitude > syringeInteractionDistance)
+            return;
+
+        // The player must be behind the nurse.
+        float angle = Vector3.Angle(
+            _agent.transform.forward,
+            toPlayer
+        );
+
+        if (angle < behindAngle)
+            return;
+
+        // Do not allow the interaction if the nurse can see the player.
+        if (CanSeePlayer())
+            return;
+
+        // Consume the syringe only after all checks pass.
+        if (!_playerInventory.UseSyringe())
+            return;
+
+        StartCoroutine(CollapseNurse());
+    }
+
+
+    private System.Collections.IEnumerator CollapseNurse()
+    {
+        _isDisabled = true;
+        _state = State.Patrol;
+
+        // Stop movement and clear the path.
+        _agent.isStopped = true;
+        _agent.ResetPath();
+
+        // Stop the patrol coroutine.
+        _patrol?.PausePatrol();
+
+        // Clear the detection indicator.
+        SetNoticeIndicator(false);
+
+        if (_animator != null)
+        {
+            // Clear other animation states.
+            _animator.SetBool("isWalking", false);
+            _animator.SetBool("isChasing", false);
+            _animator.SetBool("isSearching", false);
+
+            // Trigger Collapse after pausing the patrol.
+            _animator.ResetTrigger("Catch");
+            _animator.ResetTrigger("Collapse");
+            _animator.SetTrigger("Collapse");
+
+            // Check whether the Animator has the Collapse trigger.
+            bool hasCollapseTrigger = System.Array.Exists(
+                _animator.parameters,
+                p => p.name == "Collapse" &&
+                    p.type == AnimatorControllerParameterType.Trigger
+            );
+
+            string controllerName =
+                _animator.runtimeAnimatorController != null
+                    ? _animator.runtimeAnimatorController.name
+                    : "None";
+
+            Debug.Log(
+                "Collapse trigger sent. Animator enabled: " +
+                _animator.enabled +
+                ", Controller: " + controllerName +
+                ", Parameter exists: " + hasCollapseTrigger,
+                _animator
+            );
+        }
+        else
+        {
+            Debug.LogError("Cannot play Collapse: nurse Animator is null.", this);
+        }
+
+        yield break;
+    }
     private System.Collections.IEnumerator CatchPlayer()
     {
         _isCatching = true;
