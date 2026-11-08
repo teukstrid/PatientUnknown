@@ -1785,6 +1785,7 @@ MonoBehaviour:
   victoryMusic: {fileID: 8300000, guid: 9ffb473a8305d8741a911f9eef94a48c, type: 3}
   pauseMusic: {fileID: 8300000, guid: ab8842b42fcaba04193bd8bc50c78cbf, type: 3}
   transitionDuration: 0.5
+  sfxSource: {fileID: 0}
 --- !u!82 &176933501
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2013,6 +2014,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Interaction
   _castDistance: 5
   _raycastOffset: {x: 0, y: 1, z: 0}
+  interactionPrompt: {fileID: 654531841}
 --- !u!114 &179937294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6481,7 +6483,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1471661978573553328, guid: 2477ade425e00fa4ba0e68d09fe414c8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.8610165
+      value: 2.8610153
       objectReference: {fileID: 0}
     - target: {fileID: 1471661978573553328, guid: 2477ade425e00fa4ba0e68d09fe414c8, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6489,7 +6491,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1471661978573553328, guid: 2477ade425e00fa4ba0e68d09fe414c8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.5999985
+      value: -5.2045517
       objectReference: {fileID: 0}
     - target: {fileID: 1471661978573553328, guid: 2477ade425e00fa4ba0e68d09fe414c8, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7275,7 +7277,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -70}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &654531841
@@ -7285,7 +7287,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 654531839}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
@@ -7298,7 +7300,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Click "E"
+  m_text: Press E
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8579,7 +8581,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4593122156859368, guid: 6dae1f904e77d704bbc2e76fd688ea2b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.512021
+      value: 3.5120196
       objectReference: {fileID: 0}
     - target: {fileID: 4593122156859368, guid: 6dae1f904e77d704bbc2e76fd688ea2b, type: 3}
       propertyPath: m_LocalPosition.y
@@ -8587,7 +8589,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4593122156859368, guid: 6dae1f904e77d704bbc2e76fd688ea2b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.635977
+      value: -6.104574
       objectReference: {fileID: 0}
     - target: {fileID: 4593122156859368, guid: 6dae1f904e77d704bbc2e76fd688ea2b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8647,7 +8649,6 @@ GameObject:
   m_Component:
   - component: {fileID: 746615663}
   - component: {fileID: 746615664}
-  - component: {fileID: 746615668}
   - component: {fileID: 746615669}
   m_Layer: 0
   m_Name: Door
@@ -8694,27 +8695,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!65 &746615668
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 746615662}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 1.9586487, y: 3.2138305, z: 2.7610998}
-  m_Center: {x: 0.23368835, y: 1.1069152, z: -0.12707281}
 --- !u!114 &746615669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11630,7 +11610,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2875607619415369084, guid: 09c91b1826efdfc49877fb1016148a10, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10.417
+      value: -10.404579
       objectReference: {fileID: 0}
     - target: {fileID: 2875607619415369084, guid: 09c91b1826efdfc49877fb1016148a10, type: 3}
       propertyPath: m_LocalRotation.w
@@ -12196,6 +12176,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorInteraction
   elevatorAnimator: {fileID: 1044773156}
   opensDoors: 1
+  audioManager: {fileID: 176933500}
+  doorOpenSFX: {fileID: 8300000, guid: b7030c7fef018af498d49bb31f604d0a, type: 3}
+  doorCloseSFX: {fileID: 0}
 --- !u!1 &1055726330
 GameObject:
   m_ObjectHideFlags: 0
@@ -13833,7 +13816,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8850624785249653504, guid: 59af4971df96d4a43af2d837c0147ad7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.10559082
+      value: 0.009
       objectReference: {fileID: 0}
     - target: {fileID: 8850624785249653504, guid: 59af4971df96d4a43af2d837c0147ad7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -14443,7 +14426,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 695449518}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: Pause
+        m_MethodName: Resume
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -15335,6 +15318,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorInteraction
   elevatorAnimator: {fileID: 1044773156}
   opensDoors: 0
+  audioManager: {fileID: 176933500}
+  doorOpenSFX: {fileID: 8300000, guid: b7030c7fef018af498d49bb31f604d0a, type: 3}
+  doorCloseSFX: {fileID: 0}
 --- !u!1 &1338462753
 GameObject:
   m_ObjectHideFlags: 0
@@ -16455,11 +16441,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1918476773067327710, guid: 4efa4093b32f90c4eb5ee156949b28e2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.53
+      value: 0.9775889
       objectReference: {fileID: 0}
     - target: {fileID: 1918476773067327710, guid: 4efa4093b32f90c4eb5ee156949b28e2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -11.51
+      value: -11.204582
       objectReference: {fileID: 0}
     - target: {fileID: 1934104924925453439, guid: 4efa4093b32f90c4eb5ee156949b28e2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -16667,11 +16653,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7413821594645280862, guid: 4efa4093b32f90c4eb5ee156949b28e2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.16
+      value: -0.62240154
       objectReference: {fileID: 0}
     - target: {fileID: 7413821594645280862, guid: 4efa4093b32f90c4eb5ee156949b28e2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -11.76
+      value: -12.004566
       objectReference: {fileID: 0}
     - target: {fileID: 7461619065517316388, guid: 4efa4093b32f90c4eb5ee156949b28e2, type: 3}
       propertyPath: m_Name
@@ -22852,7 +22838,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7624106583748810831, guid: f71b1c4184b21c84f834846935fd2b64, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.4975434
+      value: -0.4975438
       objectReference: {fileID: 0}
     - target: {fileID: 7624106583748810831, guid: f71b1c4184b21c84f834846935fd2b64, type: 3}
       propertyPath: m_LocalPosition.y
@@ -22860,7 +22846,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7624106583748810831, guid: f71b1c4184b21c84f834846935fd2b64, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -7.8490624
+      value: -7.704592
       objectReference: {fileID: 0}
     - target: {fileID: 7624106583748810831, guid: f71b1c4184b21c84f834846935fd2b64, type: 3}
       propertyPath: m_LocalRotation.w

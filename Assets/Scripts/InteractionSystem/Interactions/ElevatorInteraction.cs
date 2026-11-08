@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ElevatorInteraction : MonoBehaviour, IInteractable
 {
@@ -8,6 +9,10 @@ public class ElevatorInteraction : MonoBehaviour, IInteractable
     [SerializeField] private Animator elevatorAnimator;
     [SerializeField] private bool opensDoors;
     private bool _closingForVictory;
+    public MusicManager audioManager;
+    public AudioClip doorOpenSFX;
+    [SerializeField] private AudioClip doorCloseSFX;
+
 
     public bool CanInteract()
     {
@@ -21,7 +26,7 @@ public class ElevatorInteraction : MonoBehaviour, IInteractable
             Debug.LogError("Elevator Animator is not assigned.", this);
             return false;
         }
-
+        audioManager.PlaySFX(doorOpenSFX);
         elevatorAnimator.SetBool("isOpen", opensDoors);
 
         if (!opensDoors)

@@ -15,6 +15,17 @@ public class MusicManager : MonoBehaviour
     private Coroutine _musicTransition;
     private float _musicVolume;
 
+    [Header("Sound Effects")]
+    public AudioSource sfxSource;
+
+    public void PlaySFX(AudioClip clip)
+    {
+        if (clip != null && sfxSource != null)
+        {
+            sfxSource.PlayOneShot(clip);
+        }
+    }
+
     private void Awake()
     {
         if (musicSource == null)

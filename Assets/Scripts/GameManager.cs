@@ -64,9 +64,20 @@ public class GameManager : MonoBehaviour
     private void SetState(GameState newState)
     {
         _state = newState;
-        Time.timeScale = newState == GameState.Menu || newState == GameState.Paused || newState == GameState.Won
-            ? 0f
-            : 1f;
+
+        bool inMenus = newState == GameState.Menu || newState == GameState.Paused || newState == GameState.Won;
+        StarterAssets.StarterAssetsInputs playerInputs = playerMovement.GetComponent<StarterAssets.StarterAssetsInputs>();
+        if (inMenus)
+        {
+            playerInputs.cursorInputForLook = false;
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            playerInputs.cursorInputForLook = true;
+            Time.timeScale = 1f;
+        }
+
         Debug.Log("Game State changed to: " + _state);
         OnGameStateChanged?.Invoke(_state);
 

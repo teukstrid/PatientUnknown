@@ -24,6 +24,7 @@ public class Menus : MonoBehaviour
 
     private void ShowScreen(GameState state)
     {
+        Debug.Log($"Game state changed to: {state}");
         SetPanelActive(_startPanel, state == GameState.Menu);
         SetPanelActive(_pausePanel, state == GameState.Paused);
         SetPanelActive(_winPanel, state == GameState.Won);
