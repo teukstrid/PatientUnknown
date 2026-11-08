@@ -14,6 +14,7 @@ public class Observer : MonoBehaviour
     }
 
     [SerializeField] private Transform player; // Reference the player's transform to assign in inspector (playerarmature)
+    [SerializeField] private GameObject investigationGhost;
     [SerializeField, Min(0f)] private float noticeDuration = 1.5f; // Time it takes for the nurse to notice the player before starting the chase
     [SerializeField, Min(0f)] private float lostPlayerWaitTime = 3f; // Time the nurse will wait at the last known position of the player before returning to patrol
     [SerializeField] private Image noticeIndicator; // UI element to show the nurse is noticing the player
@@ -43,6 +44,7 @@ public class Observer : MonoBehaviour
         _agent = GetComponentInParent<NavMeshAgent>(); // Get the navmeshagent component on this object or a parent
         _patrol = GetComponentInParent<NursePatrolCoroutines>(); // Get the NursePatrolCoroutines script on this object or a parent
         _animator = GetComponentInChildren<Animator>();
+        HideInvestigationGhost();
 
         if (player != null)
         {
@@ -205,6 +207,7 @@ public class Observer : MonoBehaviour
     private void BeginChasing()
     {
         _state = State.Chasing;
+        HideInvestigationGhost();
         Debug.Log("AI STATE: CHASING", this);
         _waitingAtLastKnownPosition = false;
 
@@ -239,6 +242,7 @@ public class Observer : MonoBehaviour
     private void BeginInvestigating()
     {
         _state = State.Investigating;
+        ShowInvestigationGhost();
         Debug.Log("AI STATE: INVESTIGATING", this);
         _waitingAtLastKnownPosition = false;
         SetAnimations(false, true, false);
@@ -275,10 +279,92 @@ public class Observer : MonoBehaviour
         {
             Debug.Log("AI STATE: RETURNING TO PATROL", this);
             _state = State.Patrol;
+            HideInvestigationGhost();
 
             SetAnimations(false, false, false);
 
             _patrol?.ResumePatrol();
+        }
+    }
+
+    private void ShowInvestigationGhost()
+    {
+        if (investigationGhost == null)
+            return;
+
+        Vector3 rayOrigin = _lastKnownPlayerPosition + Vector3.up * 1.5f;
+        RaycastHit[] groundHits = Physics.RaycastAll(
+            rayOrigin,
+            Vector3.down,
+            10f,
+            Physics.DefaultRaycastLayers,
+            QueryTriggerInteraction.Ignore
+        );
+        System.Array.Sort(groundHits, (a, b) => a.distance.CompareTo(b.distance));
+
+        bool foundGround = false;
+        RaycastHit groundHit = default;
+        foreach (RaycastHit hit in groundHits)
+        {
+            Transform hitTransform = hit.transform;
+            if (player != null &&
+                (hitTransform == player ||
+                 hitTransform.IsChildOf(player) ||
+                 player.IsChildOf(hitTransform)))
+            {
+                continue;
+            }
+
+            groundHit = hit;
+            foundGround = true;
+            break;
+        }
+
+        if (!foundGround)
+        {
+            Debug.LogWarning("Observer could not find a ground collider near the player's last known position; the ghost will remain hidden.", this);
+            return;
+        }
+
+        float modelOffset = investigationGhost.transform.childCount > 0
+            ? investigationGhost.transform.GetChild(0).localPosition.y
+            : 0f;
+        investigationGhost.transform.SetPositionAndRotation(
+            groundHit.point - Vector3.up * modelOffset,
+            player.rotation
+        );
+        investigationGhost.SetActive(true);
+
+        Animator ghostAnimator = investigationGhost.GetComponentInChildren<Animator>();
+        if (ghostAnimator != null)
+        {
+            foreach (AnimatorControllerParameter parameter in ghostAnimator.parameters)
+            {
+                if (parameter.type == AnimatorControllerParameterType.Bool)
+                {
+                    if (parameter.name == "Grounded")
+                        ghostAnimator.SetBool(parameter.name, true);
+                    else if (parameter.name == "isWalking" ||
+                             parameter.name == "isChasing" ||
+                             parameter.name == "isSearching" ||
+                             parameter.name == "Jump" ||
+                             parameter.name == "FreeFall")
+                        ghostAnimator.SetBool(parameter.name, false);
+                }
+                else if (parameter.type == AnimatorControllerParameterType.Float &&
+                         (parameter.name == "Speed" || parameter.name == "MotionSpeed"))
+                {
+                    ghostAnimator.SetFloat(parameter.name, 0f);
+                }
+            }
+        }
+    }
+
+    private void HideInvestigationGhost()
+    {
+        if (investigationGhost != null)
+        {
+            investigationGhost.SetActive(false);
         }
     }
 
@@ -356,6 +442,7 @@ public class Observer : MonoBehaviour
     {
         _isDisabled = true;
         _state = State.Patrol;
+        HideInvestigationGhost();
 
         // Stop movement and clear the path.
         _agent.isStopped = true;
