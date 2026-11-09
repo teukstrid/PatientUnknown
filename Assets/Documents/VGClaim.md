@@ -28,11 +28,13 @@
 | 3 | Your own function that takes a parameter (REQUIRED) | NurseInteraction.cs row 17 | Because I added an interaction on the nurse where it can be disabled, the player have more ways to "solve" the level |
 | 10 | A C# event with at least one listener (REQUIRED) | | |
 | 18 | Difficulty tuned with numbers, with before and after written down (REQUIRED) | NursePatrolCoroutine.cs row 20 |  |
-|  | | | |
-| | | | |
-| | | | |
-
-Add more rows if you used more items. More is fine, but 6 is enough.
+| 4 | Your own fuction that returns and answer, like IsPlayerClose() | | |
+| 6 | Respawn and checkpoints | | |
+| 7 | An enemy with readable rules | | |
+| 8 | An animator state machine driven by a parameter | |
+| 9 | An Animation Event that calls your code |   |
+| 16 | A juice pass(sound, effects, animation), matched to importance |  |
+| 19 | Readability: silhouette, contrast, hitboxes that match the art |  |
 
 ## The Sentence
 

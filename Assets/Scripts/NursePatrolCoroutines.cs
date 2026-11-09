@@ -17,7 +17,7 @@ public class NursePatrolCoroutines : MonoBehaviour
     [SerializeField] private bool _returnToFirstWaypoint = true;
     private int _direction = 1;
 
-    [SerializeField] private float _moveSpeed = 2f;
+    public float _moveSpeed = 2f;
 
     private void Awake()
     {

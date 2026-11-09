@@ -39,6 +39,8 @@ public class Observer : MonoBehaviour
     private bool _waitingAtLastKnownPosition; // Flag to indicate if the nurse is waiting at the last known position of the player
     private Vector3 _lastKnownPlayerPosition; // The last known position of the player that the nurse is investigating
     private bool _isCatching;
+
+    [SerializeField] float _chaseSpeed = 5;
     
     private void Awake()
     {
@@ -210,6 +212,8 @@ public class Observer : MonoBehaviour
     private void BeginChasing()
     {
         _state = State.Chasing;
+        // change the _walkSpeed to the _chaseSpeed
+
         HideInvestigationGhost();
         Debug.Log("AI STATE: CHASING", this);
         _waitingAtLastKnownPosition = false;
