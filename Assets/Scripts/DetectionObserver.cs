@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class Observer : MonoBehaviour
 {
+    // States the nurses can be in
     private enum State
     {
         Patrol,
@@ -23,11 +24,11 @@ public class Observer : MonoBehaviour
     [SerializeField, Min(0f)] private float catchDistance = 1.2f; // How close the nurse needs to be to the player to catch them
 
     [Header("Syringe Interaction")]
-    [SerializeField, Min(0f)] private float syringeInteractionDistance = 2f;
-    [SerializeField, Range(90f, 180f)] private float behindAngle = 120f;
+    [SerializeField, Min(0f)] private float syringeInteractionDistance = 2f; // How close the player needs to be to the nurse to use a syringe on them
+    [SerializeField, Range(90f, 180f)] private float behindAngle = 120f; // The angle behind the nurse that the player must be in to use a syringe on them
 
-    private PlayerInventory _playerInventory;
-    private bool _isDisabled;
+    private PlayerInventory _playerInventory; // Reference to the PlayerInventory script attached to the player
+    private bool _isDisabled; // Flag to indicate if the nurse has been disabled by the player
     private NavMeshAgent _agent; // Reference to the navmeshagent attached to the nurse
     private NursePatrolCoroutines _patrol; // Reference to the NursePatrolCoroutines script attached to the nurse
     private Animator _animator; // Reference to the animator attached to the nurse
@@ -44,7 +45,7 @@ public class Observer : MonoBehaviour
         _agent = GetComponentInParent<NavMeshAgent>(); // Get the navmeshagent component on this object or a parent
         _patrol = GetComponentInParent<NursePatrolCoroutines>(); // Get the NursePatrolCoroutines script on this object or a parent
         _animator = GetComponentInChildren<Animator>();
-        HideInvestigationGhost();
+        HideInvestigationGhost(); // Hide the ghost imprint of the player
 
         if (player != null)
         {
@@ -71,7 +72,7 @@ public class Observer : MonoBehaviour
             Debug.LogError("Assign the player Transform to the Observer.", this);
         }
 
-        SetNoticeIndicator(false);
+        SetNoticeIndicator(false); // Start the game with the notice indicator hidden
     }
 
     private void Start()
@@ -90,7 +91,8 @@ public class Observer : MonoBehaviour
 
         bool canSeePlayer = CanSeePlayer(); // Check if the nurse can see the player
 
-        // If the nurse can see the player, update the last known position and change the state accordingly. If the nurse cannot see the player, handle the current state and update timers if needed.
+        // If the nurse can see the player, update the last known position and change the state accordingly.
+        // If the nurse cannot see the player, handle the current state and update timers if needed.
         if (canSeePlayer)
         {
             _lastKnownPlayerPosition = player.position;
@@ -128,6 +130,7 @@ public class Observer : MonoBehaviour
                 break;
         }
         
+        // If the player presses E button, call the trydisablewithsyringe method
         if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
         {
             TryDisableWithSyringe();
@@ -287,6 +290,10 @@ public class Observer : MonoBehaviour
         }
     }
 
+    // When the nurse has lost the player, a "ghost" of the player will be left on the last known position showing
+    // where the nurse will stop to investigate before going back to it's patrol
+    // The method also makes sure the ghost does not spawn in the air or clipping through the ground
+    // And it plays an idle animation so it does not t-pose
     private void ShowInvestigationGhost()
     {
         if (investigationGhost == null)
@@ -360,6 +367,7 @@ public class Observer : MonoBehaviour
         }
     }
 
+    // Hide the ghost
     private void HideInvestigationGhost()
     {
         if (investigationGhost != null)
@@ -393,6 +401,8 @@ public class Observer : MonoBehaviour
         }
     }
 
+    // Try disabling the nurse with a syringe. Can only be done in certain states and if the angle and distance to the nurse
+    // is correct
     private void TryDisableWithSyringe()
     {
         // The nurse must be patrolling or investigating/searching.
@@ -437,7 +447,8 @@ public class Observer : MonoBehaviour
         StartCoroutine(CollapseNurse());
     }
 
-
+    // If a syringe is used on the nurse at the right angle and state, this method will run and the nurse will play a
+    // collapse animation and be disabled (not able to move or detect the player)
     private System.Collections.IEnumerator CollapseNurse()
     {
         _isDisabled = true;
@@ -493,6 +504,9 @@ public class Observer : MonoBehaviour
 
         yield break;
     }
+
+    // If the nurse get within range of the player, the CatchPlayer method is run
+    // This locks the player movement, play a catch animation and SFX before fading to black and restarting the game
     private System.Collections.IEnumerator CatchPlayer()
     {
         _isCatching = true;
@@ -534,6 +548,8 @@ public class Observer : MonoBehaviour
             GameManager.Instance.ResetAfterCaught();
         }
     }
+
+    // Set the animation state of the nurse
     private void SetAnimations(bool walking, bool chasing, bool searching)
     {
         if (_animator == null) return;

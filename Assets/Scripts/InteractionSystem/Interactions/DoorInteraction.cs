@@ -11,6 +11,7 @@ public class DoorInteraction : MonoBehaviour, IInteractable
         return !hasOpened;
     }
 
+    // When the player interacts with the door, play open animation
     public bool Interact(Interactor interactor)
     {
         if (hasOpened)

@@ -12,6 +12,8 @@ public class NurseInteraction : MonoBehaviour, IInteractable
         return !isCollapsed;
     }
 
+    // When the player interacts with the nurse, check if they have a syringe in their inventory
+    // If they do, use the syringe and trigger the collapse animation and disable the nurse
     public bool Interact(Interactor interactor)
     {
         PlayerInventory inventory =

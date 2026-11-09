@@ -6,6 +6,7 @@ public class CreepyPatient : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip laughter;
 
+    // When the player enters the collider, play laughter SFX
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))

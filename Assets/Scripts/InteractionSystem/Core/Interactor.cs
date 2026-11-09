@@ -12,6 +12,7 @@ public class Interactor : MonoBehaviour
     private Outline currentOutline;
     private Camera playerCamera;
 
+    // Check if a player camera is assigned and check if an interaction prompt is assigned. If not, log an error.
     private void Awake()
     {
         playerCamera = Camera.main;
@@ -35,6 +36,7 @@ public class Interactor : MonoBehaviour
 
     public void Update()
     {
+        // Update the focus on interactable objects and handle interaction input
         UpdateFocus();
         Ray a = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         Debug.DrawRay(a.origin, a.direction * _castDistance, Color.red);
@@ -51,6 +53,7 @@ public class Interactor : MonoBehaviour
     private void UpdateFocus()
     {
         // Find the closest interactable object in front of the player within the cast distance
+        // Using a raycast from the camera's position to detect interactable objects
         IInteractable interactable = null;
         Ray ray = playerCamera != null
             ? new Ray(playerCamera.transform.position, playerCamera.transform.forward)
@@ -89,6 +92,7 @@ public class Interactor : MonoBehaviour
         currentOutline = null;
 
         // outline logic
+        // BUG, currently not working
         if (currentInteractable != null)
         {
             MonoBehaviour interactableObject = currentInteractable as MonoBehaviour;
@@ -106,6 +110,7 @@ public class Interactor : MonoBehaviour
 
         }
 
+        // Set the interaction prompt visibility if there is an interactable object in focus
         if (interactionPrompt != null)
         {
             interactionPrompt.gameObject.SetActive(currentInteractable != null);

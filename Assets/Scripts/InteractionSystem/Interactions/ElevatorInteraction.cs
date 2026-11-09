@@ -19,6 +19,9 @@ public class ElevatorInteraction : MonoBehaviour, IInteractable
         return !_closingForVictory;
     }
 
+    // When the player interacts with the elevator
+    // Check if an animator is assigned to the elevator, if not, log an error
+    // Play the door open sound effect and opening animation
     public bool Interact(Interactor interactor)
     {
         if (elevatorAnimator == null)
@@ -44,6 +47,7 @@ public class ElevatorInteraction : MonoBehaviour, IInteractable
         return true;
     }
 
+    // Wait for the elevator doors to close and then trigger the victory event
     private System.Collections.IEnumerator CloseDoorsAndWin()
     {
         while (elevatorAnimator.GetCurrentAnimatorStateInfo(0).fullPathHash != ElevatorCloseState ||
