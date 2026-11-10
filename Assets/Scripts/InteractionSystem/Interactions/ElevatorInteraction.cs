@@ -10,7 +10,7 @@ public class ElevatorInteraction : MonoBehaviour, IInteractable
     [SerializeField] private bool opensDoors;
     private bool _closingForVictory;
     public MusicManager audioManager;
-    public AudioClip doorOpenSFX;
+    [SerializeField] private AudioClip doorOpenSFX;
     [SerializeField] private AudioClip doorCloseSFX;
 
 
@@ -22,6 +22,7 @@ public class ElevatorInteraction : MonoBehaviour, IInteractable
     // When the player interacts with the elevator
     // Check if an animator is assigned to the elevator, if not, log an error
     // Play the door open sound effect and opening animation
+
     public bool Interact(Interactor interactor)
     {
         if (elevatorAnimator == null)
@@ -29,17 +30,30 @@ public class ElevatorInteraction : MonoBehaviour, IInteractable
             Debug.LogError("Elevator Animator is not assigned.", this);
             return false;
         }
-        audioManager.PlaySFX(doorOpenSFX);
+
+        if (_closingForVictory)
+        {
+            return false;
+        }
+
+        if (!opensDoors && GameManager.Instance == null)
+        {
+            Debug.LogError(
+                "Cannot start the victory sequence because there is no GameManager.",
+                this);
+            return false;
+        }
+
+        if (audioManager != null)
+        {
+            AudioClip clip = opensDoors ? doorOpenSFX : doorCloseSFX;
+            audioManager.PlaySFX(clip);
+        }
+
         elevatorAnimator.SetBool("isOpen", opensDoors);
 
         if (!opensDoors)
         {
-            if (GameManager.Instance == null)
-            {
-                Debug.LogError("Cannot start the victory sequence because there is no GameManager.", this);
-                return false;
-            }
-
             _closingForVictory = true;
             StartCoroutine(CloseDoorsAndWin());
         }
@@ -47,20 +61,26 @@ public class ElevatorInteraction : MonoBehaviour, IInteractable
         return true;
     }
 
-    // Wait for the elevator doors to close and then trigger the victory event
     private System.Collections.IEnumerator CloseDoorsAndWin()
     {
-        while (elevatorAnimator.GetCurrentAnimatorStateInfo(0).fullPathHash != ElevatorCloseState ||
-               elevatorAnimator.IsInTransition(0))
+        // Wait until the closing animation starts.
+        while (elevatorAnimator.GetCurrentAnimatorStateInfo(0).fullPathHash
+                != ElevatorCloseState ||
+            elevatorAnimator.IsInTransition(0))
         {
             yield return null;
         }
 
+        // Wait until the closing animation finishes.
         while (elevatorAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
         {
             yield return null;
         }
 
+        // Give the elevator sound time to play before the victory screen.
+        yield return new WaitForSeconds(2f);
+
         GameManager.Instance.FadeToVictory();
     }
+
 }

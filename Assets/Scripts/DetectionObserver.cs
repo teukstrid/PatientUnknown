@@ -213,7 +213,7 @@ public class Observer : MonoBehaviour
     private void BeginChasing()
     {
         _state = State.Chasing;
-        // change the _walkSpeed to the _chaseSpeed
+        _agent.speed = _chaseSpeed;
 
         HideInvestigationGhost();
         Debug.Log("AI STATE: CHASING", this);
@@ -238,7 +238,7 @@ public class Observer : MonoBehaviour
 
         if (distanceToPlayer.sqrMagnitude <= catchDistance * catchDistance)
         {
-            StartCoroutine(CatchPlayer());
+            CatchPlayer();
             return;
         }
 
@@ -261,6 +261,9 @@ public class Observer : MonoBehaviour
             Debug.LogWarning("Observer could not set a path to the player's last known position.", this);
             StartWaitingAtLastKnownPosition();
         }
+
+        if (_patrol != null)
+        _agent.speed = _patrol._moveSpeed;
     }
 
     // Update the investigating state, checking if the nurse has reached the last known position and starting the wait timer if so
@@ -512,7 +515,7 @@ public class Observer : MonoBehaviour
 
     // If the nurse get within range of the player, the CatchPlayer method is run
     // This locks the player movement, play a catch animation and SFX before fading to black and restarting the game
-    private System.Collections.IEnumerator CatchPlayer()
+    private void CatchPlayer()
     {
         _isCatching = true;
         _state = State.Chasing;
@@ -542,15 +545,6 @@ public class Observer : MonoBehaviour
             _animator
          );
             _animator.SetTrigger("Catch");
-        }
-
-        // Temporary wait: replace with the actual clip duration if needed.
-        yield return new WaitForSeconds(2f);
-
-        // Fade to black and reload the scene.
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.ResetAfterCaught();
         }
     }
 

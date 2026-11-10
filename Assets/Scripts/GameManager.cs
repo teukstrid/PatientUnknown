@@ -15,11 +15,15 @@ public class GameManager : MonoBehaviour
     public GameState CurrentState => _state;
 
     public MusicManager musicManager;
-
+    private bool _victoryFadeStarted;
     [SerializeField] private CanvasGroup fadeOverlay;
     [SerializeField, Min(0f)] private float fadeDuration = 1f;
     [SerializeField] private MonoBehaviour playerMovement;
-    private bool _victoryFadeStarted;
+    [SerializeField] private LightFlicker[] flickeringLights;
+    
+    [Header("Player Caught Animation")]
+    [SerializeField] private Animator playerAnimator;
+    [SerializeField] private float caughtAnimationDuration = 2f;
 
     private void Awake()
     {
@@ -130,8 +134,34 @@ public class GameManager : MonoBehaviour
         if (_state != GameState.Playing)
             return;
 
+        // Lock player controls.
         playerMovement.enabled = false;
+
+        // Change state and stop gameplay music.
         SetState(GameState.Caught);
+
+        // Play the player's caught animation.
+        if (playerAnimator != null)
+        {
+            playerAnimator.ResetTrigger("PlayerCaught");
+            playerAnimator.SetTrigger("PlayerCaught");
+
+            Debug.Log("Player caught animation triggered.", playerAnimator);
+        }
+        else
+        {
+            Debug.LogWarning("Player Animator is not assigned!", this);
+        }
+
+        // Wait for the animation, then reset.
+        StartCoroutine(CaughtSequence());
+    }
+
+    private System.Collections.IEnumerator CaughtSequence()
+    {
+        yield return new WaitForSecondsRealtime(caughtAnimationDuration);
+
+        ResetAfterCaught();
     }
 
     public void PlayerWon()

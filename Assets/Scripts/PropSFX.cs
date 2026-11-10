@@ -52,6 +52,9 @@ public class PropSFX : MonoBehaviour
 
     public void StopSFX()
     {
-        audioSource.Stop();
+        AudioSource source = GetComponent<AudioSource>();
+
+        if (source != null)
+            source.Stop();
     }
 }
