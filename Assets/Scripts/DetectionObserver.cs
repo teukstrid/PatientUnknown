@@ -509,7 +509,7 @@ public class Observer : MonoBehaviour
         {
             Debug.LogError("Cannot play Collapse: nurse Animator is null.", this);
         }
-
+        GetComponent<NurseAudio>()?.PlayCollapse();
         yield break;
     }
 
