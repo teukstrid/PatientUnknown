@@ -6,6 +6,7 @@ public class Menus : MonoBehaviour
     [SerializeField] private GameObject _pausePanel;
     [SerializeField] private GameObject _winPanel;
     [SerializeField] private GameObject _HUDPanel;
+    [SerializeField] private GameObject _promptCanvas;
 
     private void OnEnable()
     {
@@ -30,6 +31,7 @@ public class Menus : MonoBehaviour
         SetPanelActive(_winPanel, state == GameState.Won);
         SetPanelActive(_HUDPanel, state == GameState.Playing);
         SetMenuOpen(state != GameState.Playing);
+        SetPanelActive(_promptCanvas, state == GameState.Playing);
     }
 
     private void SetPanelActive(GameObject panel, bool active)

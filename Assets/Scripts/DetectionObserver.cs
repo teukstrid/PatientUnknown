@@ -155,6 +155,15 @@ public class Observer : MonoBehaviour
             return false;
         }
 
+        Vector3 direction = player.position - _agent.transform.position;
+        float distance = direction.magnitude;
+
+        if (distance > viewDistance)
+            return false;
+
+        if (Physics.Raycast(_agent.transform.position, direction.normalized, distance))
+            return false;
+
         directionToPlayer.y = 0f;
         Vector3 forward = _agent.transform.forward;
         forward.y = 0f;

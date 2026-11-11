@@ -6,7 +6,8 @@ public class Interactor : MonoBehaviour
 {
     [SerializeField] private float _castDistance = 30f;
     [SerializeField] private Vector3 _raycastOffset = new Vector3(0, 1f, 0);
-    [SerializeField] private TMP_Text interactionPrompt;
+    [SerializeField] private GameObject interactionPrompt;
+    [SerializeField] private TMP_Text interactionText;
 
     private IInteractable currentInteractable;
     private Outline currentOutline;
@@ -17,20 +18,13 @@ public class Interactor : MonoBehaviour
     {
         playerCamera = Camera.main;
 
-        if (playerCamera == null)
-        {
-            Debug.LogError("No camera tagged MainCamera was found.", this);
-        }
-
         if (interactionPrompt == null)
         {
             Debug.LogError("Interaction prompt is not assigned.", this);
         }
         else
         {
-            interactionPrompt.enabled = true;
-            interactionPrompt.text = "Press E";
-            interactionPrompt.gameObject.SetActive(false);
+            interactionPrompt.SetActive(false);
         }
     }
 
@@ -113,7 +107,15 @@ public class Interactor : MonoBehaviour
         // Set the interaction prompt visibility if there is an interactable object in focus
         if (interactionPrompt != null)
         {
-            interactionPrompt.gameObject.SetActive(currentInteractable != null);
+            bool canInteract = currentInteractable != null
+                && currentInteractable.CanInteract();
+
+            interactionPrompt.SetActive(canInteract);
+
+            if (canInteract && interactionText != null)
+            {
+                interactionText.text = currentInteractable.PromptMessage;
+            }
         }
     }
 }

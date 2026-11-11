@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class DoorInteraction : MonoBehaviour, IInteractable
 {
+    [SerializeField] private string _promptMessage = "Open Door";
+    public string PromptMessage => _promptMessage;
     [SerializeField] private Animator doorAnimator;
     [SerializeField] private PropSFX doorSFX;
 

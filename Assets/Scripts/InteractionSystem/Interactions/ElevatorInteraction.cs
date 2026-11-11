@@ -5,7 +5,8 @@ using UnityEngine.Events;
 public class ElevatorInteraction : MonoBehaviour, IInteractable
 {
     private static readonly int ElevatorCloseState = Animator.StringToHash("Base Layer.ElevatorClose");
-
+    [SerializeField] private string _promptMessage = "Interact with Elevator";
+    public string PromptMessage => _promptMessage;
     [SerializeField] private Animator elevatorAnimator;
     [SerializeField] private bool opensDoors;
     private bool _closingForVictory;

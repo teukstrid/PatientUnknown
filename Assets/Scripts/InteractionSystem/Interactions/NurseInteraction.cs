@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class NurseInteraction : MonoBehaviour, IInteractable
 {
+    [SerializeField] private string _promptMessage = "Sedate nurse";
+    public string PromptMessage => _promptMessage;
     [SerializeField] private Animator npcAnimator;
 
     private bool isCollapsed = false;

@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class SyringePickup : MonoBehaviour, IInteractable
 {
+    [SerializeField] private string _promptMessage = "Sedative Syringe";
+    public string PromptMessage => _promptMessage;
     [SerializeField] private MusicManager musicManager;
     [SerializeField] private AudioClip pickupSFX;
     // Allows the player to interact with the syringe
