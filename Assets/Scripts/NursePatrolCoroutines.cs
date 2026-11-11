@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
@@ -21,21 +20,23 @@ public class NursePatrolCoroutines : MonoBehaviour
 
     private void Awake()
     {
-        // The NavMeshAgent and patrol script are on the parent.
         _agent = GetComponent<NavMeshAgent>();
-
-        // The Animator is on the child character model.
         _animator = GetComponentInChildren<Animator>();
 
-        if (_agent != null)
+        if (_animator != null)
         {
-            _agent.speed = _moveSpeed;
+            _animator.applyRootMotion = false;
         }
-
-        if (_animator == null)
+        else
         {
             Debug.LogWarning(
                 "No Animator found on the nurse or its children.", this);
+        }
+
+        if (_agent != null)
+        {
+            _agent.stoppingDistance = 0.1f;
+            _agent.speed = _moveSpeed;
         }
     }
 
@@ -64,6 +65,14 @@ public class NursePatrolCoroutines : MonoBehaviour
 
         _currentWaypointIndex = 0;
         _patrolCoroutine = StartCoroutine(Patrol());
+    }
+
+    public void SetRootMotion(bool enabled)
+    {
+        if (_animator != null)
+        {
+            _animator.applyRootMotion = enabled;
+        }
     }
 
     private IEnumerator Patrol()

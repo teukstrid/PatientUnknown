@@ -79,16 +79,32 @@ public class NurseAudio : MonoBehaviour
             voiceSource.Stop();
     }
 
+    // Pausing sounds and stopping the nurse from moving when the state has changed from
     private void HandleGameStateChanged(GameState state)
     {
         if (state == GameState.Playing)
         {
+            if (voiceSource != null)
+                voiceSource.UnPause();
+
             StartAmbientVO();
+        }
+        else if (state == GameState.Paused)
+        {
+            StopMovement();
+
+            if (voiceSource != null)
+                voiceSource.Pause();
         }
         else
         {
             StopMovement();
             StopAmbientVO();
+
+            if (voiceSource != null)
+                voiceSource.Stop();
+
+            hasStartedAmbient = false;
         }
     }
 
