@@ -40,6 +40,7 @@ public class Observer : MonoBehaviour
     private Vector3 _lastKnownPlayerPosition; // The last known position of the player that the nurse is investigating
     private bool _isCatching;
     private NursePatrolCoroutines _nursePatrol;
+    [SerializeField] private LayerMask visionBlockers;
 
     [SerializeField] private float _chaseSpeed = 5;
     
@@ -144,31 +145,28 @@ public class Observer : MonoBehaviour
     //TODO: Add raycast to check for obstacles between the nurse and the player
     private bool CanSeePlayer()
     {
-        if (player == null)
-        {
+        if (player == null || _agent == null)
             return false;
-        }
 
         Vector3 directionToPlayer = player.position - _agent.transform.position;
-        if (directionToPlayer.magnitude > viewDistance)
-        {
-            return false;
-        }
-
-        Vector3 direction = player.position - _agent.transform.position;
-        float distance = direction.magnitude;
+        float distance = directionToPlayer.magnitude;
 
         if (distance > viewDistance)
             return false;
 
-        if (Physics.Raycast(_agent.transform.position, direction.normalized, distance))
-            return false;
-
-        directionToPlayer.y = 0f;
         Vector3 forward = _agent.transform.forward;
+        directionToPlayer.y = 0f;
         forward.y = 0f;
 
-        return Vector3.Angle(forward, directionToPlayer) <= viewAngle * 0.5f;
+        if (Vector3.Angle(forward, directionToPlayer) > viewAngle * 0.5f)
+            return false;
+
+        return !Physics.Raycast(
+            _agent.transform.position,
+            (player.position - _agent.transform.position).normalized,
+            distance,
+            visionBlockers,
+            QueryTriggerInteraction.Ignore);
     }
 
     // The nurse begins noticing the player, stopping its patrol and starting the notice timer
