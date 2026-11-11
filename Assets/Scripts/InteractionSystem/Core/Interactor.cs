@@ -46,8 +46,6 @@ public class Interactor : MonoBehaviour
 
     private void UpdateFocus()
     {
-        // Find the closest interactable object in front of the player within the cast distance
-        // Using a raycast from the camera's position to detect interactable objects
         IInteractable interactable = null;
         Ray ray = playerCamera != null
             ? new Ray(playerCamera.transform.position, playerCamera.transform.forward)
@@ -71,7 +69,6 @@ public class Interactor : MonoBehaviour
             }
         }
 
-        // early out if the interactable hasn't changed
         if (currentInteractable == interactable)
         {
             return;
@@ -85,26 +82,29 @@ public class Interactor : MonoBehaviour
         currentInteractable = interactable;
         currentOutline = null;
 
-        // outline logic
-        // BUG, currently not working
-        if (currentInteractable != null)
+        if (currentInteractable != null && currentInteractable.ShouldShowOutline())
         {
             MonoBehaviour interactableObject = currentInteractable as MonoBehaviour;
-            currentOutline = interactableObject.GetComponent<Outline>();
-
-            // create default outline if interactable wants to and don't have an outline already
-            if (currentOutline == null && currentInteractable.ShouldShowOutline())
+            if (interactableObject != null)
             {
-                currentOutline = interactableObject.gameObject.AddComponent<Outline>();
+                currentOutline = interactableObject.GetComponent<Outline>();
+                if (currentOutline == null)
+                {
+                    currentOutline = interactableObject.GetComponentInChildren<Outline>();
+                }
+
+                if (currentOutline == null)
+                {
+                    currentOutline = interactableObject.gameObject.AddComponent<Outline>();
+                }
+
                 currentOutline.OutlineMode = Outline.Mode.OutlineVisible;
-                currentOutline.OutlineColor = Color.yellow;
+                currentOutline.OutlineColor = Color.white;
                 currentOutline.OutlineWidth = 2f;
                 currentOutline.enabled = true;
             }
-
         }
 
-        // Set the interaction prompt visibility if there is an interactable object in focus
         if (interactionPrompt != null)
         {
             bool canInteract = currentInteractable != null
