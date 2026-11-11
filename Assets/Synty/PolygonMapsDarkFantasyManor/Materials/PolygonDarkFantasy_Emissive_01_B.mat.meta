@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0806fa1143a94c94a8cc9f76c389c86c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 410594
+  packageName: POLYGON - Dark Fantasy Manor Map by Synty
+  packageVersion: 1.0.0
+  assetPath: Assets/Synty/PolygonMapsDarkFantasyManor/Materials/PolygonDarkFantasy_Emissive_01_B.mat
+  uploadId: 1013876
