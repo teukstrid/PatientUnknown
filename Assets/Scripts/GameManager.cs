@@ -94,21 +94,30 @@ public class GameManager : MonoBehaviour
         switch (newState)
         {
             case GameState.Menu:
+                musicManager.StopAmbience();
                 musicManager.PlayMusic(musicManager.menuMusic);
                 break;
+
             case GameState.Playing:
+                musicManager.PlayOrResumeAmbience();
                 musicManager.PlayMusic(musicManager.gameplayMusic);
                 break;
+
             case GameState.Paused:
+                musicManager.PauseAmbience();
                 musicManager.PlayMusic(musicManager.pauseMusic);
                 break;
+
             case GameState.Won:
+                musicManager.StopAmbience();
                 musicManager.PlayMusic(musicManager.victoryMusic);
                 break;
+
             case GameState.Caught:
+                musicManager.StopAmbience();
                 musicManager.StopMusic();
                 break;
-        }
+        }   
     }
 
     public void StartGame()

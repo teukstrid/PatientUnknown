@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Wallpaper_Green_03
-  m_Shader: {fileID: -6465566751694194690, guid: 0730dae39bc73f34796280af9875ce14,
-    type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 0730dae39bc73f34796280af9875ce14, type: 3}
   m_Parent: {fileID: 2100000, guid: a6fd93a6620dad54bb3a913d54b0eee8, type: 2}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -20,7 +19,8 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap:
     RenderType: Opaque
-  disabledShaderPasses: []
+  disabledShaderPasses:
+  - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -33,6 +33,7 @@ Material:
     m_Floats: []
     m_Colors: []
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!114 &5872318346060498983
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -58,4 +59,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 7
+  version: 10

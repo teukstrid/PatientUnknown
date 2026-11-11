@@ -6,9 +6,14 @@ public class MusicManager : MonoBehaviour
 
     [Header("Music Tracks")]
     public AudioClip menuMusic;
-    public AudioClip gameplayMusic;
     public AudioClip victoryMusic;
     public AudioClip pauseMusic;
+    
+    [Header("Gameplay Ambience")]
+    public AudioSource ambienceSource;
+    public AudioClip gameplayAmbience;
+    public AudioClip gameplayMusic;
+    private bool ambiencePaused;
 
     [SerializeField, Min(0f)] private float transitionDuration = 0.5f;
 
@@ -79,6 +84,47 @@ public class MusicManager : MonoBehaviour
         }
 
         _musicTransition = StartCoroutine(ChangeMusic(track));
+    }
+
+        public void PlayOrResumeAmbience()
+    {
+        if (ambienceSource == null || gameplayAmbience == null)
+        {
+            Debug.LogError("Gameplay ambience source or clip is not assigned.", this);
+            return;
+        }
+
+        ambienceSource.clip = gameplayAmbience;
+        ambienceSource.loop = true;
+
+        if (ambiencePaused)
+        {
+            ambienceSource.UnPause();
+            ambiencePaused = false;
+        }
+        else if (!ambienceSource.isPlaying)
+        {
+            ambienceSource.Play();
+        }
+    }
+
+    public void PauseAmbience()
+    {
+        if (ambienceSource != null && ambienceSource.isPlaying)
+        {
+            ambienceSource.Pause();
+            ambiencePaused = true;
+        }
+    }
+
+    public void StopAmbience()
+    {
+        if (ambienceSource != null)
+        {
+            ambienceSource.Stop();
+        }
+
+        ambiencePaused = false;
     }
 
     private System.Collections.IEnumerator ChangeMusic(AudioClip track)
