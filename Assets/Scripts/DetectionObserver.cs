@@ -41,8 +41,10 @@ public class Observer : MonoBehaviour
     private bool _isCatching;
     private NursePatrolCoroutines _nursePatrol;
     [SerializeField] private LayerMask visionBlockers;
-
     [SerializeField] private float _chaseSpeed = 5;
+
+    [Header("Heartbeat UI")]
+    [SerializeField] private HeartbeatEffect heartbeatEffect;
     
     private void Awake()
     {
@@ -179,6 +181,8 @@ public class Observer : MonoBehaviour
         _agent.isStopped = true;
         _patrol?.PausePatrol();
         SetNoticeIndicator(true);
+        heartbeatEffect.SetChasing(false);
+        heartbeatEffect.SetNoticing(true);
         UpdateNoticeIndicator();
     }
 
@@ -214,6 +218,8 @@ public class Observer : MonoBehaviour
         _noticeTimer = 0f;
         SetNoticeIndicator(false);
         _patrol?.ResumePatrol();
+        heartbeatEffect.SetChasing(false);
+        heartbeatEffect.SetNoticing(false);
     }
 
     // The nurse begins chasing the player, stopping its patrol and updating its destination to the player's last known position
@@ -222,13 +228,15 @@ public class Observer : MonoBehaviour
         _state = State.Chasing;
         _agent.speed = _chaseSpeed;
 
+        GameManager.Instance?.musicManager?.SetChaseAmbience(true);
+
         HideInvestigationGhost();
         Debug.Log("AI STATE: CHASING", this);
         _waitingAtLastKnownPosition = false;
 
         SetNoticeIndicator(false);
-
         SetAnimations(false, true, false);
+        heartbeatEffect.SetChasing(true);
 
         _agent.isStopped = false;
         UpdateChasing();
@@ -262,6 +270,9 @@ public class Observer : MonoBehaviour
         _waitingAtLastKnownPosition = false;
         SetAnimations(false, true, false);
         _agent.isStopped = false;
+        GameManager.Instance?.musicManager?.SetChaseAmbience(false);
+        heartbeatEffect.SetChasing(false);
+        heartbeatEffect.SetNoticing(true);
 
         if (!_agent.SetDestination(_lastKnownPlayerPosition))
         {

@@ -12,8 +12,10 @@ public class MusicManager : MonoBehaviour
     [Header("Gameplay Ambience")]
     public AudioSource ambienceSource;
     public AudioClip gameplayAmbience;
+    public AudioClip chaseAmbience;
     public AudioClip gameplayMusic;
     private bool ambiencePaused;
+    private bool isChasing;
 
     [SerializeField, Min(0f)] private float transitionDuration = 0.5f;
 
@@ -88,13 +90,15 @@ public class MusicManager : MonoBehaviour
 
         public void PlayOrResumeAmbience()
     {
-        if (ambienceSource == null || gameplayAmbience == null)
+        AudioClip clip = isChasing ? chaseAmbience : gameplayAmbience;
+
+        if (ambienceSource == null || clip == null)
         {
-            Debug.LogError("Gameplay ambience source or clip is not assigned.", this);
+            Debug.LogError("Ambience source or selected clip is not assigned.", this);
             return;
         }
 
-        ambienceSource.clip = gameplayAmbience;
+        ambienceSource.clip = clip;
         ambienceSource.loop = true;
 
         if (ambiencePaused)
@@ -124,6 +128,23 @@ public class MusicManager : MonoBehaviour
             ambienceSource.Stop();
         }
 
+        ambiencePaused = false;
+    }
+
+    public void SetChaseAmbience(bool chasing)
+    {
+        isChasing = chasing;
+        AudioClip clip = isChasing ? chaseAmbience : gameplayAmbience;
+
+        if (ambienceSource == null || clip == null)
+        {
+            Debug.LogError("Ambience source or selected clip is not assigned.", this);
+            return;
+        }
+
+        ambienceSource.clip = clip;
+        ambienceSource.loop = true;
+        ambienceSource.Play();
         ambiencePaused = false;
     }
 
