@@ -138,6 +138,7 @@ public class GameManager : MonoBehaviour
     public void Resume()
     {
         SetState(GameState.Playing);
+        CloseInteractionTooltip();
     }
 
     public void Pause()

@@ -70,6 +70,8 @@
 
 | 19 | Readability: silhouette, contrast, hitboxes that match the art | Interactor.cs line 13 | Because I built an item outline, the player can more easily see what items it can interact with |
 
+| 17 | Accessibility | HeartbeatEffects.cs line 51 & 66 | Not an option, but an addition to the added tension in sound/ambience when being chased/detected to give people with hearing problems a way to know that they are being chased or detected |
+
 
 
 ## Check Before You Send

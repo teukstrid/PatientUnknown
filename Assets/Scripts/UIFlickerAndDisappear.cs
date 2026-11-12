@@ -33,6 +33,7 @@ public class UIFlickerAndDisappear : MonoBehaviour
         }
     }
 
+    // Make the canvas flicker and disappear after set amout of time
     private IEnumerator FlickerThenDisappear()
     {
         float elapsed = 0f;

@@ -47,6 +47,7 @@ public class HeartbeatEffect : MonoBehaviour
         }
     }
 
+    // Set the heartbeat UI state to Noticing so that it can be used in the observer to display the noticing heartbeat
     public void SetNoticing(bool active)
     {
         isNoticing = active;
@@ -61,6 +62,7 @@ public class HeartbeatEffect : MonoBehaviour
             SetGroupAlpha(noticingGroup, 0f);
     }
 
+    // Set the heartbeat UI state to Chasing so that it can be used in the observer to display the chase heartbeathase
     public void SetChasing(bool active)
     {
         isChasing = active;

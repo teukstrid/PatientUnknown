@@ -181,6 +181,7 @@ public class Observer : MonoBehaviour
         _agent.isStopped = true;
         _patrol?.PausePatrol();
         SetNoticeIndicator(true);
+        GetComponent<NurseAudio>()?.PlayDetection();
         heartbeatEffect.SetChasing(false);
         heartbeatEffect.SetNoticing(true);
         UpdateNoticeIndicator();
@@ -270,6 +271,7 @@ public class Observer : MonoBehaviour
         _waitingAtLastKnownPosition = false;
         SetAnimations(false, true, false);
         _agent.isStopped = false;
+        GetComponent<NurseAudio>()?.PlayInvestigation();
         GameManager.Instance?.musicManager?.SetChaseAmbience(false);
         heartbeatEffect.SetChasing(false);
         heartbeatEffect.SetNoticing(true);
@@ -427,11 +429,11 @@ public class Observer : MonoBehaviour
         }
     }
 
-    // Try disabling the nurse with a syringe. Can only be done in certain states and if the angle and distance to the nurse
-    // is correct
+    // Try disabling the nurse with a syringe.
+    // Can only be done in certain states and if the angle and distance to the nurse is correct
     private void TryDisableWithSyringe()
     {
-        // The nurse must be patrolling or investigating/searching.
+        // The nurse must be patrolling or investigating/searching for the syringe to work.
         if (_state != State.Patrol &&
             _state != State.Investigating)
             return;
@@ -550,6 +552,8 @@ public class Observer : MonoBehaviour
         {
             GameManager.Instance.PlayerCaught();
         }
+
+        GetComponent<NurseAudio>()?.PlayCatch();
 
         // Play the Catch animation.
         if (_animator != null)

@@ -10,6 +10,7 @@ public class TooltipBillboard : MonoBehaviour
         _mainCamera = Camera.main;
     }
 
+    // Make the tooltip canvas always face the cameras direction
     private void LateUpdate()
     {
         if (_mainCamera == null)
