@@ -3,49 +3,65 @@ using UnityEngine;
 public class SyringePickup : MonoBehaviour, IInteractable
 {
     [SerializeField] private string _promptMessage = "Sedative Syringe";
-    public string PromptMessage => _promptMessage;
     [SerializeField] private MusicManager musicManager;
     [SerializeField] private AudioClip pickupSFX;
-    // Allows the player to interact with the syringe
-    public bool CanInteract()
+    [SerializeField] private GameObject tooltipCanvas;
+
+    private bool _hasBeenPickedUp;
+    public string PromptMessage => _promptMessage;
+
+    private void Awake()
     {
-        return true;
+        if (tooltipCanvas != null)
+            tooltipCanvas.SetActive(false);
     }
 
-    // Interaction logic for picking up the syringe
-    // Checks if the player has a PlayerInventory component and adds the syringe to it
+    public bool CanInteract()
+    {
+        return !_hasBeenPickedUp;
+    }
+
     public bool Interact(Interactor interactor)
     {
+        if (_hasBeenPickedUp)
+            return false;
+
         PlayerInventory inventory =
-         interactor.GetComponent<PlayerInventory>();
+            interactor.GetComponent<PlayerInventory>();
 
+        if (inventory == null)
+        {
+            Debug.LogWarning("PlayerInventory not found!");
+            return false;
+        }
 
-    if (inventory == null)
-    {
-        Debug.LogWarning("PlayerInventory not found!");
-         return false;
-     }
+        if (GameManager.Instance == null || tooltipCanvas == null)
+        {
+            Debug.LogError(
+                "GameManager or Tooltip Canvas is missing!", this);
+            return false;
+        }
 
-    if (inventory.AddSyringe())
-    {
+        if (!inventory.AddSyringe())
+        {
+            Debug.Log("Already carrying a syringe.");
+            return false;
+        }
+
+        _hasBeenPickedUp = true;
+
         Debug.Log("Syringe pickup successful!");
 
         if (pickupSFX != null && musicManager != null)
         {
-            Debug.Log("Playing syringe SFX!");
             musicManager.PlaySFX(pickupSFX);
         }
-        else
-        {
-            Debug.LogWarning("Syringe SFX reference is missing!");
-        }
 
-        Destroy(gameObject);
-        Debug.Log("Syringe picked up!");
+        GameManager.Instance.ShowInteractionTooltip(
+            tooltipCanvas,
+            gameObject
+        );
+
         return true;
     }
-
-        Debug.Log("Already carrying a syringe.");
-        return false;
-     }
 }

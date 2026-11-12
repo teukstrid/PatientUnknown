@@ -2,20 +2,19 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
-public enum GameState { Menu, Playing, Paused, Caught, Won }
+public enum GameState { Menu, Playing, Paused, Inspecting, Caught, Won }
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     [SerializeField] private GameState _state = GameState.Menu;
     private static bool _skipStartScreen;
-
     public static event System.Action<GameState> OnGameStateChanged;
-
     public GameState CurrentState => _state;
-
     public MusicManager musicManager;
     private bool _victoryFadeStarted;
+    private GameObject _activeInteractionTooltip;
+    private GameObject _objectToDestroyAfterTooltip;
     [SerializeField] private CanvasGroup fadeOverlay;
     [SerializeField, Min(0f)] private float fadeDuration = 1f;
     [SerializeField] private MonoBehaviour playerMovement;
@@ -50,26 +49,37 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    
     private void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        if (Keyboard.current == null ||
+            !Keyboard.current.escapeKey.wasPressedThisFrame)
+            return;
+
+        if (_state == GameState.Inspecting)
         {
-            if (_state == GameState.Playing)
-            {
-                SetState(GameState.Paused);
-            }
-            else if (_state == GameState.Paused)
-            {
-                SetState(GameState.Playing);
-            }
+            CloseInteractionTooltip();
+        }
+        else if (_state == GameState.Playing)
+        {
+            SetState(GameState.Paused);
+        }
+        else if (_state == GameState.Paused)
+        {
+            SetState(GameState.Playing);
         }
     }
+
 
     private void SetState(GameState newState)
     {
         _state = newState;
 
-        bool inMenus = newState == GameState.Menu || newState == GameState.Paused || newState == GameState.Won;
+        bool inMenus =
+            newState == GameState.Menu ||
+            newState == GameState.Paused ||
+            newState == GameState.Inspecting ||
+            newState == GameState.Won;
         StarterAssets.StarterAssetsInputs playerInputs = playerMovement.GetComponent<StarterAssets.StarterAssetsInputs>();
         if (inMenus)
         {
@@ -164,6 +174,35 @@ public class GameManager : MonoBehaviour
 
         // Wait for the animation, then reset.
         StartCoroutine(CaughtSequence());
+    }
+
+
+    public void ShowInteractionTooltip(
+        GameObject tooltipCanvas,
+        GameObject objectToDestroy)
+    {
+        if (_state != GameState.Playing)
+            return;
+
+        _activeInteractionTooltip = tooltipCanvas;
+        _objectToDestroyAfterTooltip = objectToDestroy;
+
+        _activeInteractionTooltip.SetActive(true);
+        SetState(GameState.Inspecting);
+    }
+
+    private void CloseInteractionTooltip()
+    {
+        if (_activeInteractionTooltip != null)
+            _activeInteractionTooltip.SetActive(false);
+
+        if (_objectToDestroyAfterTooltip != null)
+            Destroy(_objectToDestroyAfterTooltip);
+
+        _activeInteractionTooltip = null;
+        _objectToDestroyAfterTooltip = null;
+
+        SetState(GameState.Playing);
     }
 
     private System.Collections.IEnumerator CaughtSequence()
