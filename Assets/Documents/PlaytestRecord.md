@@ -15,18 +15,19 @@ At least 3 testers. Required for the playtest, Thursday Nov 12.
 
 ## What They Did
 
+**Greybox**
 | Tester | Did they win, lose or quit? When? | Where did they get stuck or confused? | One thing I saw them do |
 First Playable
 |---|---|---|---|
 | 1. | Cedrik | Win | Instantly ran to the elevator and past the patroling "nurse" capsule |
 
 
-Alpha
+**Alpha**
 |---|---|---|---|
 | 1. | Sebastian | Lost and then won | Learnt from the loss and adjusted his tactics the second try |
 | 2. | Christian | Played through the whole loop and both got to experience winning and losing | Retrying despite winning on the first try |
 
-Safety build
+**Safety build**
 |---|---|---|---|
 | 1. | Mikael | Both won and lost | Didn't understand what to do with the syringe |
 | 2. | Dane | Both won and lost | Swiwled the camera a lot causing him to get weird and frustrating angles that took him out of the "fantasy" |
