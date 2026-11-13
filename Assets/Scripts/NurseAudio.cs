@@ -196,7 +196,7 @@ public class NurseAudio : MonoBehaviour
         if (hasPlayedInvestigation)
             return;
 
-        hasPlayedInvestigation = true;
+        // hasPlayedInvestigation = true;
         PlayVoice(investigationVO);
     }
 
@@ -205,7 +205,7 @@ public class NurseAudio : MonoBehaviour
         if (hasPlayedDetection)
             return;
 
-        hasPlayedDetection = true;
+        // hasPlayedDetection = true;
         PlayVoice(detectionVO);
     }
 

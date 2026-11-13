@@ -9,6 +9,7 @@ public class NurseAnimationEvents : MonoBehaviour
         nurseAudio = GetComponentInParent<NurseAudio>();
     }
 
+// Audio for the footsteps of the nurses
     public void Footstep()
     {
         Debug.Log("Footstep animation event received!", this);

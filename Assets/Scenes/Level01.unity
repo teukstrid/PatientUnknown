@@ -19063,7 +19063,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd17b4e47b107a040a7d40e5472b90b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorInteraction
-  _promptMessage: Open Elevbator
+  _promptMessage: Open Elevator
   elevatorAnimator: {fileID: 1044773156}
   opensDoors: 1
   audioManager: {fileID: 176933500}
@@ -23755,7 +23755,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd17b4e47b107a040a7d40e5472b90b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorInteraction
-  _promptMessage: Open Elevbator
+  _promptMessage: Close Elevator
   elevatorAnimator: {fileID: 1044773156}
   opensDoors: 0
   audioManager: {fileID: 176933500}
@@ -32951,7 +32951,7 @@ MonoBehaviour:
   minAmbientInterval: 15
   maxAmbientInterval: 30
   investigationVO: {fileID: 8300000, guid: 260dac77c4c88aa4fa6a130697b230aa, type: 3}
-  detectionVO: {fileID: 8300000, guid: 005aa84ee65081146b0301046e22792c, type: 3}
+  detectionVO: {fileID: 8300000, guid: 260dac77c4c88aa4fa6a130697b230aa, type: 3}
   catchVO: {fileID: 8300000, guid: 9573a4108725b6149a6c94ff128885d0, type: 3}
   collapseSFX: {fileID: 8300000, guid: de5168a9246455446bbceb069a95cf52, type: 3}
 --- !u!1 &1909466512
@@ -33861,7 +33861,7 @@ MonoBehaviour:
   minAmbientInterval: 15
   maxAmbientInterval: 30
   investigationVO: {fileID: 8300000, guid: 260dac77c4c88aa4fa6a130697b230aa, type: 3}
-  detectionVO: {fileID: 8300000, guid: 005aa84ee65081146b0301046e22792c, type: 3}
+  detectionVO: {fileID: 8300000, guid: 260dac77c4c88aa4fa6a130697b230aa, type: 3}
   catchVO: {fileID: 8300000, guid: 9573a4108725b6149a6c94ff128885d0, type: 3}
   collapseSFX: {fileID: 8300000, guid: de5168a9246455446bbceb069a95cf52, type: 3}
 --- !u!82 &1933257824
